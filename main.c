@@ -9,7 +9,7 @@ int main(){
 
     molxyz =  fopen("acetaldehyde.txt", "r");
     molecule_read(molxyz, &mol);
-
+    printf("++++++Input Data++++++");
     printf("%d\n", mol.natom);
     for (int i = 0; i < mol.natom; i++)
         printf("%d\t", mol.zvals[i]);
@@ -19,6 +19,12 @@ int main(){
             printf("%3.6lf\t", mol.geom[j+k]);
         }
         putchar('\n');
+    }
+    printf("+++++++Distances between Atoms+++++++\n");
+    for (int n = 0; n < 3*mol.natom; n+=3){
+        for (int m = 0; m < n; m+=3){
+            printf("%d\t%d\t%lf\n", n/3, m/3, molecule_bond(mol, n, m));
+        }
     }
     return 0;
 }

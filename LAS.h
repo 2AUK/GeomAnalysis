@@ -7,7 +7,7 @@
 #include "molecule.h"
 
 //helper functions for performing intermediate mathematical operations
-void unit_vector(Molecule mol_i, Molecule mol_j);
+void unit_vector(Molecule mol, double *uvec);
 
 //wrappers around the annoyingly complicated gsl routines TODO
 #endif

@@ -43,8 +43,9 @@ void molecule_read(FILE *stream, Molecule *mol){
 }
 
 double molecule_bond(Molecule mol, int a, int b){
-    
-
+    return sqrt( (mol.geom[a+0] - mol.geom[b+0]) * (mol.geom[a+0] - mol.geom[b+0])
+               + (mol.geom[a+1] - mol.geom[b+1]) * (mol.geom[a+1] - mol.geom[b+1])
+               + (mol.geom[a+2] - mol.geom[b+2]) * (mol.geom[a+2] - mol.geom[b+2]));
 }
     
 //double molecule_angle(Molecule mol, int a, int b, int c){}
