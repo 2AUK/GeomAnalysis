@@ -38,7 +38,7 @@ void molecule_read(FILE *stream, Molecule *mol){
         mol->zvals[i++] = z_val;
         mol->geom[j++] = x;
         mol->geom[j++] = y;
-        mol->geom[j++] = x;
+        mol->geom[j++] = z;
     }
 }
 
