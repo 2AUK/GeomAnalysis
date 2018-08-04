@@ -47,5 +47,16 @@ double molecule_bond(Molecule mol, int a, int b){
                + (mol.geom[a+1] - mol.geom[b+1]) * (mol.geom[a+1] - mol.geom[b+1])
                + (mol.geom[a+2] - mol.geom[b+2]) * (mol.geom[a+2] - mol.geom[b+2]));
 }
-    
-//double molecule_angle(Molecule mol, int a, int b, int c){}
+
+double unit_vector(Molecule mol, int cart, int a, int b){
+     return -1 * ((mol.geom[a + cart] - mol.geom[b + cart]) / molecule_bond(mol, a, b));    
+}
+double molecule_angle(Molecule mol, int a, int b, int c){
+    return acos(unit_vector(mol, 0, b, a) * unit_vector(mol, 0, b, c) + unit_vector(mol ,1, b, a) * unit_vector(mol, 1, b, c) + unit_vector(mol, 2, b, a) * unit_vector(mol, 2, b, c));
+}
+
+
+void molecule_free(Molecule *mol){
+    free(mol->zvals);
+    free(mol->geom);
+}
