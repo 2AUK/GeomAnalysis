@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gsl/gsl_matrix.h>
+#include <gsl/gsl_eigen.h>
 
 #include "molecule.h"
 #include "LAS.h"
@@ -163,11 +164,60 @@ void molecule_inertia(Molecule mol){
     gsl_matrix_set(inertia_mat, 2, 0, gsl_matrix_get(inertia_mat, 0, 2));
     gsl_matrix_set(inertia_mat, 2, 1, gsl_matrix_get(inertia_mat, 1, 2));
 
+    printf("++++++Inertia Tensor (amu bohr^2)++++++\n");
     for (int i = 0; i < 3; i++){
         for (int j = 0; j < 3; j++)
             printf("%lf\t", gsl_matrix_get(inertia_mat, i, j));
         putchar('\n');
     }
+
+    gsl_eigen_symmv_workspace *eig_solver = gsl_eigen_symmv_alloc(3);
+    gsl_vector *evals = gsl_vector_alloc(3);
+    gsl_matrix *evecs = gsl_matrix_alloc(3, 3);
+
+    gsl_eigen_symmv(inertia_mat, evals, evecs, eig_solver);
+    
+    
+    printf("++++++Principal Moments of Inertia (amu bohr^2)++++++\n");
+    for(int i = 0; i< 3; i++)
+        printf("%lf\n", gsl_vector_get(evals, i));
+    double conv1 = 0.529177249 * 0.529177249;
+    printf("++++++Principal Moments of Inertia (amu  AA^2)++++++\n");
+    for(int i = 0; i<3; i++)
+        printf("%lf\n", gsl_vector_get(evals, i) * conv1);
+    double conv2 = 1.6605402E-24 * 0.529177249E-8 * 0.529177249E-8;
+    printf("++++++Principal Moments of Inertia (g cm^2)++++++\n");
+    for(int i = 0; i<3; i++)
+        printf("%lf\n", gsl_vector_get(evals, i) * conv2);
+    if (mol.natom == 2)  printf("Molecule is diatomic\n");
+    else if(gsl_vector_get(evals, 0) < 1E-4) printf("Molecule is linear\n");
+    else if(fabs(gsl_vector_get(evals, 0) - gsl_vector_get(evals, 1)) < 1E-4 && fabs(gsl_vector_get(evals, 1) - gsl_vector_get(evals, 2)) < 1E-4)
+        printf("Molecule is a spherical top\n");
+    else if(fabs(gsl_vector_get(evals, 0) - gsl_vector_get(evals, 1)) < 1E-4 && fabs(gsl_vector_get(evals, 1) - gsl_vector_get(evals, 2)) > 1E-4)
+        printf("Molecule is an oblate spherical top\n");
+    else if(fabs(gsl_vector_get(evals, 0) - gsl_vector_get(evals, 1)) > 1E-4 && fabs(gsl_vector_get(evals, 1) - gsl_vector_get(evals, 2)) < 1E-4)
+        printf("Molecule is a prolate spherical top\n");
+    else printf("Molecule is an asymmetric top\n");
+
+
+    double _pi = acos(-1.0);
+    double conv = 6.6260755E-34/(8.0 * _pi * _pi);
+    conv /= 1.6605402E-27 * 0.529177249E-10 * 0.529177249E-10;
+    conv *= 1E-6;
+    printf("++++++Rotational Constants (MHz)++++++\n");
+    printf("\tA = %lf\tB = %lf\tC = %lf\n", conv/gsl_vector_get(evals, 0), conv/gsl_vector_get(evals, 1), conv/gsl_vector_get(evals, 2));
+
+    double convc = 6.6260755E-34 / (8.0 * _pi * _pi);
+    convc /= 1.6605402E-27 * 0.529177249E-10 * 0.529177249E-10;
+    convc /= 2.99792458E10;
+    printf("++++++Rotational Constants (cm^-1)++++++\n");
+    printf("\tA = %lf\tB = %lf\tC = %lf\n", convc/gsl_vector_get(evals, 0), convc/gsl_vector_get(evals, 1), convc/gsl_vector_get(evals, 2));
+
+
+    gsl_vector_free(evals);
+    gsl_matrix_free(evecs);
+    gsl_matrix_free(inertia_mat);
+    gsl_eigen_symmv_free(eig_solver);
 }
     
 void molecule_free(Molecule *mol){

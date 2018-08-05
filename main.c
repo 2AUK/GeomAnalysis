@@ -71,7 +71,6 @@ int main(){
         }
     }
     molecule_COMtranslation(&mol);
-    printf("Inertia Tensor (amu bohr^2)\n");
     molecule_inertia(mol);
     molecule_free(&mol);
 
