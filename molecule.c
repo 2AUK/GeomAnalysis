@@ -4,6 +4,7 @@
 
 #include "molecule.h"
 #include "LAS.h"
+#include "masses.h"
     
 #define BUF_SIZE 20000
 
@@ -105,6 +106,38 @@ double molecule_torsion(Molecule mol, int a, int b, int c, int d){
 
     return tau*sign;
 }
+
+void molecule_COMtranslation(Molecule *mol){
+    double M = 0.0;
+    
+    for (int i = 0; i < mol->natom; i++) M += masses[mol->zvals[i]];
+
+    double xcm = 0.0;
+    double ycm = 0.0;
+    double zcm = 0.0;
+    double mi;
+
+    for (int i = 0; i < 3*mol->natom; i+=3){
+        mi = masses[mol->zvals[i/3]];
+        xcm += mi * mol->geom[i+0];
+        ycm += mi * mol->geom[i+1];
+        zcm += mi * mol->geom[i+2];
+    }
+
+    xcm /= M;
+    ycm /= M;
+    zcm /= M;
+
+    printf("COM is\t%lf\t%lf\t%lf\n", xcm, ycm, zcm);
+
+    for (int i = 0; i < 3*mol->natom; i+=3){
+        mol->geom[i+0] += -xcm;
+        mol->geom[i+1] += -ycm;
+        mol->geom[i+2] += -zcm;
+    }
+}
+
+
 
 void molecule_free(Molecule *mol){
     free(mol->zvals);

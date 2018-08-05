@@ -70,6 +70,7 @@ int main(){
             }
         }
     }
+    molecule_COMtranslation(&mol);
     molecule_free(&mol);
 
     return 0;
