@@ -26,6 +26,8 @@ double molecule_torsion(Molecule mol, int a, int b, int c, int d);
 
 void molecule_COMtranslation(Molecule *mol);
 
+void molecule_inertia(Molecule mol);
+
 void molecule_free(Molecule *mol);
 #endif
     

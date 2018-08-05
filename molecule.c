@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <gsl/gsl_matrix.h>
 
 #include "molecule.h"
 #include "LAS.h"
@@ -137,8 +138,38 @@ void molecule_COMtranslation(Molecule *mol){
     }
 }
 
+void molecule_inertia(Molecule mol){
+    gsl_matrix * inertia_mat = gsl_matrix_alloc (3, 3);
+    double mi, I00, I11, I22, I01, I02, I12;
+    I00 = I11 = I22 = I01 = I02 = I12 = 0;
 
+    for (int i = 0; i < 3*mol.natom; i+=3){
+        mi = masses[mol.zvals[i/3]];
+        I00 += mi * (mol.geom[i+1]*mol.geom[i+1] + mol.geom[i+2]*mol.geom[i+2]);
+        gsl_matrix_set(inertia_mat, 0, 0, I00);
+        I11 += mi * (mol.geom[i+0]*mol.geom[i+0] + mol.geom[i+2]*mol.geom[i+2]);
+        gsl_matrix_set(inertia_mat, 1, 1, I11);
+        I22 += mi * (mol.geom[i+0]*mol.geom[i+0] + mol.geom[i+1]*mol.geom[i+1]);
+        gsl_matrix_set(inertia_mat, 2, 2, I22);
+        I01 += mi * (mol.geom[i+0]*mol.geom[i+1]); 
+        gsl_matrix_set(inertia_mat, 0, 1, I01);
+        I02 += mi * (mol.geom[i+0]*mol.geom[i+2]); 
+        gsl_matrix_set(inertia_mat, 0, 2, I02);
+        I12 += mi * (mol.geom[i+1]*mol.geom[i+2]); 
+        gsl_matrix_set(inertia_mat, 1, 2, I12);
+    }
 
+    gsl_matrix_set(inertia_mat, 1, 0, gsl_matrix_get(inertia_mat, 0, 1));
+    gsl_matrix_set(inertia_mat, 2, 0, gsl_matrix_get(inertia_mat, 0, 2));
+    gsl_matrix_set(inertia_mat, 2, 1, gsl_matrix_get(inertia_mat, 1, 2));
+
+    for (int i = 0; i < 3; i++){
+        for (int j = 0; j < 3; j++)
+            printf("%lf\t", gsl_matrix_get(inertia_mat, i, j));
+        putchar('\n');
+    }
+}
+    
 void molecule_free(Molecule *mol){
     free(mol->zvals);
     free(mol->geom);
