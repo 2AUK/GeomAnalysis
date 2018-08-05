@@ -35,6 +35,34 @@ int main(){
             }
         }
     }
+    printf("++++++Out Of Plane Angles++++++\n");
+    for (int i = 0; i < 3*mol.natom; i+=3){
+        for (int k = 0; k < 3*mol.natom; k+=3){
+            for (int j = 0; j < 3*mol.natom; j+=3){
+                for(int l = 0; l < j; l+=3){
+                    for( int count = 0; count < 3; count++){
+                        if (i+count != j+count
+                          &&i+count != k+count
+                          &&i+count != l+count
+                          &&j+count != k+count
+                          &&j+count != l+count
+                          &&k+count != l+count
+                          &&molecule_bond(mol, i, k) < 4.0
+                          &&molecule_bond(mol, k, j) < 4.0
+                          &&molecule_bond(mol, k, l) < 4.0){
+                            if (count == 0)
+                                printf("%d-%d-%d-%d\t%lf\n", i/3, j/3, k/3, l/3, molecule_oop(mol,i,j,k,l)*(180.0/acos(-1.0)));
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+
+    molecule_free(&mol);
+
     return 0;
 }
 

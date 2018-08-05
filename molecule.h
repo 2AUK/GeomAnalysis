@@ -20,6 +20,12 @@ double unit_vector(Molecule mol, int cart, int a, int b);
 
 double molecule_angle(Molecule mol, int a, int b, int c);
 
+double molecule_oop(Molecule mol, int a, int b, int c, int d);
+
+double molecule_torsion(Molecule mol, int a, int b, int c, int d);
+
+double molecule_COMtranslation(Molecule *mol);
+
 void molecule_free(Molecule *mol);
 #endif
     

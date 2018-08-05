@@ -55,6 +55,23 @@ double molecule_angle(Molecule mol, int a, int b, int c){
     return acos(unit_vector(mol, 0, b, a) * unit_vector(mol, 0, b, c) + unit_vector(mol ,1, b, a) * unit_vector(mol, 1, b, c) + unit_vector(mol, 2, b, a) * unit_vector(mol, 2, b, c));
 }
 
+double molecule_oop(Molecule mol, int a, int b, int c, int d){
+    double ebcd_x = (unit_vector(mol, 1, c, b) * unit_vector(mol, 2, c, d) - unit_vector(mol, 2, c, b) * unit_vector(mol, 1, c, d));
+    double ebcd_y = (unit_vector(mol, 2, c, b) * unit_vector(mol, 0, c, d) - unit_vector(mol, 0, c, b) * unit_vector(mol, 2, c, d));
+    double ebcd_z =  (unit_vector(mol, 0, c, b) * unit_vector(mol, 1, c, d) - unit_vector(mol, 1, c, b) * unit_vector(mol, 0, c, d));
+
+    double exx = ebcd_x * unit_vector(mol, 0, c, a);
+    double eyy = ebcd_y * unit_vector(mol, 1, c, a);
+    double ezz = ebcd_z * unit_vector(mol, 2, c, a);
+
+    double theta = (exx + eyy + ezz) / sin(molecule_angle(mol, b, c, d));
+
+    if (theta < -1.0) theta = asin(-1.0);
+    else if (theta > 1.0) theta = asin(1.0);
+    else theta =  asin(theta);
+
+    return theta;
+}
 
 void molecule_free(Molecule *mol){
     free(mol->zvals);
