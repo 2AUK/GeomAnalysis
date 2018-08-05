@@ -59,8 +59,17 @@ int main(){
             }
         }
     }
-
-
+    printf("++++++Torsional Angles++++++\n");
+    for (int i = 0; i < 3*mol.natom; i+=3){
+        for (int j = 0; j < i; j+=3){
+            for (int k = 0; k < j; k+=3){
+                for (int l = 0; l < k; l+=3){
+                    if (molecule_bond(mol, i, j) < 4.0 && molecule_bond(mol, j, k) < 4.0 && molecule_bond(mol, k, l) < 4.0)
+                        printf("%d-%d-%d-%d\t%lf\n", i/3, j/3, k/3, l/3, molecule_torsion(mol, i, j, k, l)*(180.0/acos(-1.0)));
+                }
+            }
+        }
+    }
     molecule_free(&mol);
 
     return 0;
